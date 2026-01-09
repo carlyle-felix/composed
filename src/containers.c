@@ -150,8 +150,8 @@ void print_list(List containers)
     List temp;
     int i;
 
-    printf("    container\t\timage\n\n");
+    printf("    container\t\t\timage\n\n");
     for (i = 1, temp = containers; temp; temp = temp->next, i++) {
-        printf("%-4d%-30s%s\n", i, temp->name, temp->image);
+        printf("%-4d%-28s%s\n", i, temp->name, temp->image);
     }
 }
