@@ -25,6 +25,8 @@ int main(int argc, char *argv[])
             return 1;
         }
 
+        compose_pull(containers);
+
         print_list(containers);
         free_list(containers);
     }

@@ -13,9 +13,9 @@ struct node {
     struct node *next;
 };
 
-void *new_container(void);
+void *new_container_list(void);
 
-void *new_container(void)
+void *new_container_list(void)
 {
     List temp = malloc(sizeof(struct node));
     if (!temp) {
@@ -72,7 +72,7 @@ List get_list(void)
     }
 
     while (fgets(line, BUFFER, fp)) {
-        temp = new_container();
+        temp = new_container_list();
 
         strcpy(token, strtok(line, "\t"));
         temp->name = mem_alloc(strlen(token) + 1);
@@ -154,4 +154,31 @@ void print_list(List containers)
     for (i = 1, temp = containers; temp; temp = temp->next, i++) {
         printf("%-4d%-28s%s\n", i, temp->name, temp->image);
     }
+}
+
+int compose_pull(List containers)
+{
+    List temp;
+    int num_containers = 0, n = 0, duplicate, next;
+
+    for (temp = containers; temp; temp = temp->next) {
+        num_containers++;
+    }
+    char path_list[num_containers][BUFFER];
+
+    next = 0;
+    for (temp = containers; temp; temp = temp->next) {
+        duplicate = 0;
+        for (n = 0; n < num_containers; n++) {
+            if (path_list[n] && !strcmp(path_list[n], temp->path)) {
+                duplicate = 1;
+                break;
+            }
+        }
+        if (!duplicate) {
+            strcpy(path_list[next++], temp->path);
+        }
+    }
+
+    return 0;
 }
