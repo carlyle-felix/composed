@@ -156,16 +156,23 @@ void print_list(List containers)
     }
 }
 
-int compose_pull(List containers)
+int compose_update(List containers)
 {
     List temp;
     int num_containers = 0, n = 0, duplicate, next;
+    char cmd[BUFFER];
+    FILE *fp;
 
     for (temp = containers; temp; temp = temp->next) {
         num_containers++;
     }
-    char path_list[num_containers][BUFFER];
 
+    char path_list[num_containers][BUFFER];
+    for (n = 0; n < num_containers; n++) {
+        path_list[n][0] = '\0';
+    }
+
+    // compose pull list
     next = 0;
     for (temp = containers; temp; temp = temp->next) {
         duplicate = 0;
@@ -180,5 +187,29 @@ int compose_pull(List containers)
         }
     }
 
+    // pull
+    for (next = 0; next < num_containers && path_list[next][0]; next++) {
+        snprintf(cmd, BUFFER, "pushd %s && \
+                                docker compose pull && \
+                                docker compose up -d --force-recreate", path_list[next]);
+
+        // TODO: better solution later
+        system(cmd);
+    }
+
     return 0;
+}
+
+void connect_network(List containers, char *network)
+{
+    char cmd[BUFFER];
+    List temp;
+
+    for (temp = containers; temp; temp = temp->next) {
+        snprintf(cmd, BUFFER, "docker network connect %s %s", network, temp->name);
+
+        // TODO: better solution later
+        system(cmd);
+    }
+    
 }
