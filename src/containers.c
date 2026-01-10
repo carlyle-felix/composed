@@ -205,9 +205,12 @@ void connect_network(List containers, char *network)
     char cmd[BUFFER];
     List temp;
 
+    printf("connect_network():\n");
     for (temp = containers; temp; temp = temp->next) {
         snprintf(cmd, BUFFER, "docker network connect %s %s", network, temp->name);
 
+        printf("\nconnecting %s to %s...", temp->name, network);
+        
         // TODO: better solution later
         system(cmd);
     }
