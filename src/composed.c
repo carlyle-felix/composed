@@ -37,8 +37,5 @@ int main(int argc, char *argv[])
     
     free_list(containers);
 
-    // check which containers arent up-to-date
-    // print list of containers with current and update version
-    // update containers
-
+    return 0;
 }
