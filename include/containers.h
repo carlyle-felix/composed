@@ -1,8 +1,6 @@
 #ifndef CONTAINERS_H
 #define CONTAINERS_H
 
-#define VERBOSE
-
 #define BUFFER 512
 
 typedef struct node *List;
