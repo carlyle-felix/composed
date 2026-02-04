@@ -215,7 +215,7 @@ void connect_network(List containers, char *network)
     for (temp = containers; temp; temp = temp->next) {
         snprintf(cmd, BUFFER, NETWORK, network, temp->name);
 
-        printf("\nconnecting %s to %s...", temp->name, network);
+        printf("connecting %s to %s...\n", temp->name, network);
         
         // TODO: better solution later
         system(cmd);
