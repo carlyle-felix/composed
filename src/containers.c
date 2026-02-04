@@ -4,6 +4,14 @@
 
 #include "../include/containers.h"
 
+#define LIST "docker ps --format {{.Names}}\"\t\"{{.Image}}"
+#define PATH "docker inspect %s | grep -Po \'\"com.docker.compose.project.working_dir\": \\K.*\'"
+#define UPDATE "pushd %s && \
+            docker compose pull && \
+            docker compose up -d --force-recreate"
+#define NETWORK "docker network connect %s %s"
+#define PRUNE "docker image prune -a"
+
 struct node {
     char *name;
     char *image;
@@ -65,7 +73,7 @@ List get_list(void)
     FILE *fp;
     List temp, containers = NULL;
 
-    fp = popen("docker ps --format {{.Names}}\"\t\"{{.Image}}", "r");
+    fp = popen(LIST, "r");
     if (!fp) {
         printf("error: unable to get list of containers\n");
         return NULL;
@@ -110,7 +118,7 @@ List get_yml_path(List containers)
     for (temp = containers; temp; temp = temp->next) {
 
         cmd[0] = '\0';
-        snprintf(cmd, BUFFER, "docker inspect %s | grep -Po \'\"com.docker.compose.project.working_dir\": \\K.*\'", temp->name);
+        snprintf(cmd, BUFFER, PATH, temp->name);
         
         fp = popen(cmd, "r");
         if (!fp) {
@@ -189,9 +197,7 @@ int compose_update(List containers)
 
     // pull
     for (next = 0; next < num_containers && path_list[next][0]; next++) {
-        snprintf(cmd, BUFFER, "pushd %s && \
-                                docker compose pull && \
-                                docker compose up -d --force-recreate", path_list[next]);
+        snprintf(cmd, BUFFER, UPDATE, path_list[next]);
 
         // TODO: better solution later
         system(cmd);
@@ -207,7 +213,7 @@ void connect_network(List containers, char *network)
 
     printf("connect_network():\n");
     for (temp = containers; temp; temp = temp->next) {
-        snprintf(cmd, BUFFER, "docker network connect %s %s", network, temp->name);
+        snprintf(cmd, BUFFER, NETWORK, network, temp->name);
 
         printf("\nconnecting %s to %s...", temp->name, network);
         
@@ -215,4 +221,10 @@ void connect_network(List containers, char *network)
         system(cmd);
     }
     
+}
+
+void prune(void)
+{
+    // TODO: better solution later
+    system(PRUNE);
 }
